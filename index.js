@@ -52,5 +52,5 @@ app.post("/webhook", middleware(config), async (req, res) => {
   res.sendStatus(200);
 });
 
-// Vercel 用（ローカルサーバーは不要）
+// Vercel 用
 export default app;
