@@ -1,20 +1,25 @@
 import express from "express";
-import { Client } from "@line/bot-sdk";
+import { Client, middleware } from "@line/bot-sdk";
 import OpenAI from "openai";
 
 const app = express();
-app.use(express.json());
 
-const lineClient = new Client({
+// LINE 設定
+const config = {
   channelAccessToken: process.env.LINE_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET
-});
+};
 
+// LINE クライアント
+const lineClient = new Client(config);
+
+// OpenAI クライアント
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-app.post("/webhook", async (req, res) => {
+// Webhook エンドポイント（署名検証つき）
+app.post("/webhook", middleware(config), async (req, res) => {
   const events = req.body.events;
 
   for (const event of events) {
@@ -47,4 +52,5 @@ app.post("/webhook", async (req, res) => {
   res.sendStatus(200);
 });
 
-app.listen(3000, () => console.log("Server running"));
+// Vercel 用（ローカルサーバーは不要）
+export default app;
